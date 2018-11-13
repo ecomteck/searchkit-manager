@@ -1,0 +1,36 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="searchkit-manager">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * `searchkit-manager`
+     * Searchkit Manager
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SearchkitManager extends Polymer.Element {
+      static get is() { return 'searchkit-manager'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'searchkit-manager'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(SearchkitManager.is, SearchkitManager);
+  </script>
+</dom-module>

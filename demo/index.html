@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>searchkit-manager demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="stylesheet" href="../bower_components/searchkit/release/theme.css">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../searchkit-manager.html">
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic searchkit-manager demo</h3>
+      <div id="app"></div>
+      <demo-snippet>
+        <template>
+          <searchkit-manager>
+              <script type="text/babel" slot="script-babel">
+    const host = "http://demo.searchkit.co/api/movies"
+
+    const sk = new SearchkitManager(host, {})
+    class InitialLoaderComponent extends React.Component {
+        render() {
+            return (
+                <div>
+                    loading please wait...
+                </div>
+            )
+        }
+    }
+
+    class MovieHitsGridItem extends React.Component {
+        render() {
+            const {bemBlocks, result} = this.props
+            let url = "http://www.imdb.com/title/" + result._source.imdbId
+            const source:any = _.extend({}, result._source, result.highlight)
+            return (
+                <div className={bemBlocks.item().mix(bemBlocks.container("item"))} data-qa="hit">
+                <a href={url} target="_blank">
+                    <img data-qa="poster" className={bemBlocks.item("poster")} src={result._source.poster} width="170" height="240"/>
+                    <div data-qa="title" className={bemBlocks.item("title")} dangerouslySetInnerHTML={{__html:source.title}}>
+                    </div>
+                </a>
+                </div>
+            )
+        }
+    }
+
+    class MovieHitsListItem extends React.Component {
+        render() {
+            const {bemBlocks, result} = this.props
+            let url = "http://www.imdb.com/title/" + result._source.imdbId
+            const source:any = _.extend({}, result._source, result.highlight)
+            return (
+                <div className={bemBlocks.item().mix(bemBlocks.container("item"))} data-qa="hit">
+                <div className={bemBlocks.item("poster")}>
+                    <img data-qa="poster" src={result._source.poster}/>
+                </div>
+                <div className={bemBlocks.item("details")}>
+                    <a href={url} target="_blank"><h2 className={bemBlocks.item("title")} dangerouslySetInnerHTML={{__html:source.title}}></h2></a>
+                    <h3 className={bemBlocks.item("subtitle")}>Released in {source.year}, rated {source.imdbRating}/10</h3>
+                    <div className={bemBlocks.item("text")} dangerouslySetInnerHTML={{__html:source.plot}}></div>
+                </div>
+                </div>
+            )
+        }
+    }
+
+
+    class ProductHit extends React.Component {
+        render() {
+            const result = this.props.result;
+            let url = "http://www.imdb.com/title/" + result._source.imdbId
+            return (
+                <div className={this.props.bemBlocks.item().mix(this.props.bemBlocks.container("item"))} key={result._id}>
+                    <a href={url} target="_blank">
+                        <div className={this.props.bemBlocks.item("name")}>{result._source.name}</div>
+                    </a>
+                </div>
+            )
+        }
+
+    }
+
+    class Application extends React.Component {
+        render() {
+            return (
+                <div>
+                 <SearchkitProvider searchkit={sk}>
+        <Layout size="l">
+
+          <TopBar>
+            <SearchBox
+              autofocus={true}
+              searchOnChange={true}
+              queryFields={["title^5", "actors"]}
+              />
+          </TopBar>
+
+          <LayoutBody>
+
+            <SideBar>
+              <RangeFilter
+                min={0}
+                max={100}
+                field="metaScore"
+                id="metascore"
+                title="Metascore"
+              />
+
+              <RefinementListFilter
+                id="actors"
+                title="Actors"
+                field="actors.raw"
+                operator="OR"
+                size={10}
+                listComponent={ItemHistogramList}
+              />
+
+              <RefinementListFilter
+                id="writers"
+                title="Writers"
+                field="writers.raw"
+                operator="OR"
+                size={10}
+              />
+
+              <HierarchicalMenuFilter
+                fields={["type.raw", "genres.raw"]}
+                title="Categories"
+                id="categories"/>
+
+
+
+            </SideBar>
+
+      			<LayoutResults>
+
+              <ActionBar>
+                <ActionBarRow>
+          				<HitsStats/>
+          			</ActionBarRow>
+                <ActionBarRow>
+                  <SelectedFilters/>
+                  <ResetFilters/>
+                </ActionBarRow>
+              </ActionBar>
+
+              <Hits
+                itemComponent={MovieHitsGridItem}
+                mod="sk-hits-grid"
+                hitsPerPage={15}
+                highlightFields={["title"]}/>
+              <NoHits suggestionsField="title"/>
+
+      			</LayoutResults>
+          </LayoutBody>
+
+    		</Layout>
+      </SearchkitProvider>
+            </div>
+            );
+        }
+    }
+    ReactDOM.render(<Application />, document.getElementById('app'));
+              </script>
+          </searchkit-manager>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>

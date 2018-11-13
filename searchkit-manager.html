@@ -1,0 +1,84 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<script src="https://unpkg.com/react@16.0.0/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.production.min.js"></script>
+<script src="./bower_components/searchkit/release/bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+<dom-module id="searchkit-manager">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <link rel="stylesheet" href="./bower_components/searchkit/release/theme.css">
+    <slot name="script-babel"></slot>
+    <div id="app"></div>
+  </template>
+
+  <script>
+    /**
+     * `searchkit-manager`
+     * Searchkit Manager
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    const {
+        SearchBox,
+        Hits,
+        HitsStats,
+        RefinementListFilter,
+        ResetFilters,
+        SelectedFilters,
+        HierarchicalMenuFilter,
+        NumericRefinementListFilter,
+        SearchkitComponent,
+        SearchkitProvider,
+        SearchkitManager,
+        NoHits,
+        RangeFilter,
+        ItemHistogramList,
+        TagCloud,
+        Layout, LayoutBody, LayoutResults,
+        SideBar, TopBar,
+        ActionBar, ActionBarRow
+    } = window.Searchkit;
+    
+    class SearchkitManagerElement extends Polymer.Element {
+      static get is() { return 'searchkit-manager'; }
+      static get properties() {
+        return {
+          config: {
+            type: String,
+            value: 'searchkit-manager'
+          }
+        };
+      }
+
+      constructor() {
+        super();
+        
+      }
+      connectedCallback() {
+        if (super.connectedCallback) {
+          super.connectedCallback();
+        }
+        /* ... */
+        let code = this.getBabelScript();
+        var output = Babel.transform(code, {presets: ['react', 'es2015'],plugins: ["transform-eval"]}).code;
+        console.log(output);
+        eval(output).bind(this);
+        //ReactDOM.render(React.createElement(Application, null), this.$.app);
+      }
+
+      getBabelScript() {
+        let nodes = Polymer.FlattenedNodesObserver.getFlattenedNodes(this.shadowRoot.querySelector('slot'));
+        let template =  [].filter.call(nodes, (node) => node.nodeType === Node.ELEMENT_NODE)[0];
+        return template.innerHTML;
+      }
+    }
+
+    window.customElements.define(SearchkitManagerElement.is, SearchkitManagerElement);
+  </script>
+</dom-module>
