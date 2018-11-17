@@ -3,16 +3,16 @@
 <script src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.production.min.js"></script>
 <script src="./bower_components/searchkit/release/bundle.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+
 <dom-module id="searchkit-manager">
+  <link rel="import" type="css" href="./bower_components/searchkit/release/theme.css">
   <template>
     <style>
       :host {
         display: block;
       }
     </style>
-    <link rel="stylesheet" href="./bower_components/searchkit/release/theme.css">
     <slot name="script-babel"></slot>
-    <div id="app"></div>
   </template>
 
   <script>
@@ -64,12 +64,14 @@
         if (super.connectedCallback) {
           super.connectedCallback();
         }
+        window.SearckitManagerContainer = this.shadowRoot;
         /* ... */
         let code = this.getBabelScript();
         var output = Babel.transform(code, {presets: ['react', 'es2015'],plugins: ["transform-eval"]}).code;
-        console.log(output);
-        eval(output).bind(this);
-        //ReactDOM.render(React.createElement(Application, null), this.$.app);
+        eval(output);
+        var style = document.createElement('style');
+        style.innerHTML = '@import "../bower_components/searchkit/release/theme.css";@import "./bower_components/searchkit/release/theme.css";.sk-layout__top-bar {position: relative;}';
+        this.shadowRoot.appendChild(style);
       }
 
       getBabelScript() {
